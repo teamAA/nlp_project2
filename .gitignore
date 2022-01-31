@@ -6,3 +6,4 @@ client-secrets.json
 src/credentials.json
 
 data_model/*
+/data_model

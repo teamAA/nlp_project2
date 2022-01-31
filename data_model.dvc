@@ -1,0 +1,5 @@
+outs:
+- md5: 5cdb60a1965c334afa82bf32d55318ca.dir
+  size: 398602
+  nfiles: 2
+  path: data_model
