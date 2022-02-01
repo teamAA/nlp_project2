@@ -5,7 +5,7 @@ src/settings.yaml
 client-secrets.json
 src/credentials.json
 
-credentials*
+src/credentials*
 
 data_model/*
 /data_model
