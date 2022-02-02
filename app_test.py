@@ -17,7 +17,8 @@ train=pd.read_csv('src/data-registry/train.csv')
 train['dataset'] = 'train'
 
 # Import pickle model
-loaded_model = pickle.load('src/model_v1.pkl')
+with open(r"src/model_v1.pkl", "rb") as input_file:
+    loaded_model = pickle.load(input_file)
 
 # Import data for prediction
 pred_train = train[['text','sentiment', 'dataset']]

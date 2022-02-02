@@ -9,6 +9,7 @@ import nltk
 nltk.download('stopwords')
 nltk.download('wordnet')
 nltk.download('omw-1.4')
+nltk.download('punkt')
 
 def tokenization(text):
     # Word Tokenization
