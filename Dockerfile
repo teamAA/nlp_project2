@@ -12,4 +12,4 @@ ADD requirements.txt /app/
 RUN pip install -r requirements.txt
 
 ADD . /app
-CMD  dvc remote modify myremote --local gdrive_service_account_json_file_path src/credentials.json ; dvc pull ; streamlit run app_main.py --server.port=8080 --browser.serverAddress='0.0.0.0' --server.enableCORS=false --server.enableXsrfProtection=false --server.enableWebsocketCompression=false
+CMD  dvc remote modify myremote --local gdrive_service_account_json_file_path src/credentials.json ; dvc pull ; streamlit run app_main.py --server.port=8080 
