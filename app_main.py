@@ -13,13 +13,11 @@ import requests
 st.set_page_config(layout = "wide")
 
 # Import data
-train=pd.read_csv('https://raw.githubusercontent.com/teamAA/nlp_project2/main/src/data-registry/train.csv')
+train=pd.read_csv('src/data-registry/train.csv')
 train['dataset'] = 'train'
 
 # Import pickle model
-mLink = 'https://github.com/teamAA/nlp_project2/blob/main/src/model_v1.pkl?raw=true'
-mfile = BytesIO(requests.get(mLink).content)
-loaded_model = pickle.load(mfile)
+loaded_model = pickle.load('src/model_v1.pkl')
 
 # Import data for prediction
 pred_train = train[['text','sentiment', 'dataset']]
