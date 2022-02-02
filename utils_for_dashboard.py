@@ -1,23 +1,14 @@
 import pandas as pd
 import numpy as np
 import re
-import dvc.api
-from io import StringIO
 from sklearn.feature_extraction.text import CountVectorizer
 from collections import Counter
 from nltk import ngrams
-from nltk import word_tokenize
+from nltk.tokenize import word_tokenize
 import nltk
 nltk.download('stopwords')
 nltk.download('wordnet')
 nltk.download('omw-1.4')
-nltk.download('punkt')
-
-def load_data():
-    dvc_train = dvc.api.read('data-registry/train.csv', repo='../')
-    train = pd.read_csv(StringIO(dvc_train) )
-    train['dataset'] = 'train'
-    return df
 
 def tokenization(text):
     # Word Tokenization
