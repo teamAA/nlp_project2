@@ -10,5 +10,6 @@ src/credentials*
 data_model/*
 /data_model
 
-src/data-registry/*
-src/*.pkl
+src/data-registry/train.csv
+src/data-registry/test.csv
+src/model_v1.pkl
