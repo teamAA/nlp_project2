@@ -9,3 +9,6 @@ src/credentials*
 
 data_model/*
 /data_model
+
+src/data-registry/*
+src/*.pkl
