@@ -9,6 +9,11 @@ import plotly.figure_factory as ff
 import plotly.graph_objects as go
 from io import BytesIO, StringIO
 import requests
+import nltk
+nltk.download('stopwords')
+nltk.download('wordnet')
+nltk.download('omw-1.4')
+nltk.download('punkt')
 
 st.set_page_config(layout = "wide")
 
