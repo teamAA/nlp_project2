@@ -3,12 +3,7 @@ data
 *pyc
 src/settings.yaml
 client-secrets.json
-src/credentials.json
 
-src/credentials*
-
-data_model/*
-/data_model
 
 src/data-registry/train.csv
 src/data-registry/test.csv
