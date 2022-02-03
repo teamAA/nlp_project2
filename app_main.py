@@ -36,7 +36,7 @@ data["tweet_date"] = np.random.choice(pd.date_range(start_date, end_date), len(d
 list_sentiment=['all']+list(data['sentiment'].unique())
 
 # Create title for all pages
-st.title('Sentiment Analysis V2')
+st.title('Sentiment Analysis V3')
 st.markdown('The project is to build a model that will determine the tone (neutral, positive, negative) of the tweet text.')
 
 menu = st.sidebar.radio( "What's your go?", ('Explore', 'Predict'))
