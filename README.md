@@ -14,3 +14,6 @@ List of Task - 16 Feb 2022
 2.  Create a fully completed script
   - End to End integration (need to integrate Continues Traning Trigger, Develop automate testing workflow, to deployment)
   - Contribute + Fork system
+
+
+1. Each PIC can fork and add each of required feature? (Each PIC will share screen etc)
