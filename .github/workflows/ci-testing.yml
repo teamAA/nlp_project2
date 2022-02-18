@@ -21,6 +21,6 @@ jobs:
       - name: checking-train-script
         working-directory: ./src
         run: |
-          dvc remote modify myremote --local gdrive_service_account_json_file_path src/credentials.json 
+          dvc remote modify myremote --local gdrive_service_account_json_file_path credentials.json 
           dvc pull
           python train.py
