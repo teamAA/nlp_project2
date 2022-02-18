@@ -13,22 +13,23 @@ def main():
     print("New data is available")
     print("Doing retraining.......")
     model = retrain()
+    pickle.dump(model, open("model_v1.pkl", 'wb'))
     print("Done!")
 
-    upload_model(model)
+    #upload_model(model)
 
-def upload_model(model):
-    pickle.dump(model, open("model.pkl", 'wb'))
+# def upload_model(model):
+#     pickle.dump(model, open("model.pkl", 'wb'))
 
-    gauth = GoogleAuth()       
-    gauth.LoadCredentialsFile('../src/credentials.json')
-    drive = GoogleDrive(gauth)  
+#     gauth = GoogleAuth()       
+#     gauth.LoadCredentialsFile('../src/credentials.json')
+#     drive = GoogleDrive(gauth)  
     
-    upload_file = 'model.pkl'
-    gfile = drive.CreateFile({'parents': [{'id': '1BnBxVTuQ8Otab2h7aQFdXI14Ou3uIVVk'}]})
+#     upload_file = 'model.pkl'
+#     gfile = drive.CreateFile({'parents': [{'id': '1BnBxVTuQ8Otab2h7aQFdXI14Ou3uIVVk'}]})
     
-    gfile.SetContentFile(upload_file)
-    gfile.Upload()
+#     gfile.SetContentFile(upload_file)
+#     gfile.Upload()
 
 if __name__ == "__main__":
     main()

@@ -17,20 +17,17 @@ import os
 # firli was here
 
 def load_data():
-    dvc_train = dvc.api.read('data-registry/train.csv', repo='../')
-    dvc_test = dvc.api.read('data-registry/test.csv', repo='../')
+    train = pd.read_csv('data-registry/train.csv')
+    test = pd.read_csv('data-registry/test.csv')
 
-    train = pd.read_csv( StringIO(dvc_train) )
     print(f"train shape: {train.shape}")
     train['dataset'] = 'train'
-
-    test = pd.read_csv( StringIO(dvc_test) )
     test['dataset'] = 'test'
 
     df = pd.concat([train,test],axis=0)
     df = df.reset_index().drop('index',axis=1)
 
-    return df, len(dvc_train), len(dvc_test)
+    return df
 
 def data_preproc(df):
     df['sentiment'] = np.where(df['sentiment']=='neutral',0,df['sentiment'])
@@ -116,7 +113,7 @@ def log_neptune(test, pred):
     #         neptune.append_tag('ci-pipeline', os.getenv('NEPTUNE_EXPERIMENT_TAG_ID'))
 
 def main(log = False):
-    df, len_train, len_test = load_data()
+    df = load_data()
     train, test = data_preproc(df)
     bow_train, bow_test = bag_of_words(train, test)
 
@@ -141,7 +138,7 @@ def main(log = False):
     
     if log == True:
         log_neptune(test, pred_logreg)
-    
+
     return model
     
 if __name__ == "__main__":
