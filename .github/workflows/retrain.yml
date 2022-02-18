@@ -8,7 +8,7 @@ on:
       branches:
         - main
       paths:
-        - data-registry.dvc
+        - src/data-registry/train.csv.dvc
 
 jobs:
   build:
