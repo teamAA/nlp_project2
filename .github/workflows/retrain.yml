@@ -36,13 +36,16 @@ jobs:
         dir: './src'
     - name: Retraining
       working-directory: ./src
-      run: python main.py
+      run:  |
+        dvc remote modify myremote --local gdrive_service_account_json_file_path src/credentials.json 
+        dvc pull
+        python main.py
       env:
         GDRIVE_CREDENTIALS_DATA: ${{ secrets.GDRIVE_CREDENTIALS_DATA }}
         NEPTUNE_API_TOKEN: ${{ secrets.NEPTUNE_API_TOKEN }}
         NEPTUNE_PROJECT_NAME: ${{ secrets.NEPTUNE_PROJECT_NAME }}
     - name: Push new model to DVC
       working-directory: ./src
-      run: dvc remote modify myremote --local gdrive_service_account_json_file_path src/credentials.json 
+      run: |
         dvc push model_v1.pkl
 
