@@ -28,18 +28,14 @@ jobs:
     - name: Download NLTK resources
       run: |
         python -m nltk.downloader all
-    - name: Create Secrets JSON File
-      uses: jsdaniell/create-json@1.1.2
-      with:
-        name: "credentials.json"
-        json: ${{ secrets.CREDENTIALS }}
-        dir: './src'
     - name: Setup DVC
-      run: dvc remote modify myremote --local gdrive_service_account_json_file_path src/credentials.json; dvc pull
-      shell: cmd
+      run: |
+        dvc remote modify myremote --local gdrive_service_account_json_file_path src/credentials.json
+        dvc pull
     - name: Retraining
       working-directory: ./src
-      run:  python main.py
+      run: |
+        python main.py
       env:
         GDRIVE_CREDENTIALS_DATA: ${{ secrets.GDRIVE_CREDENTIALS_DATA }}
         NEPTUNE_API_TOKEN: ${{ secrets.NEPTUNE_API_TOKEN }}
