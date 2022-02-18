@@ -8,7 +8,7 @@ on:
       branches:
         - main
       paths:
-        - data-registry.dvc
+        - src/data-registry/train.csv.dvc
 
 jobs:
   build:
@@ -17,10 +17,10 @@ jobs:
     
     steps:
     - uses: actions/checkout@v2
-    - name: Set up Python 3.6
+    - name: Set up Python 3.8
       uses: actions/setup-python@v2
       with:
-        python-version: "3.6"
+        python-version: "3.8"
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
@@ -28,21 +28,20 @@ jobs:
     - name: Download NLTK resources
       run: |
         python -m nltk.downloader all
-    - name: Create Secrets JSON File
-      uses: jsdaniell/create-json@1.1.2
-      with:
-        name: "credentials.json"
-        json: ${{ secrets.CREDENTIALS }}
-        dir: './src'
+    - name: Setup DVC
+      run: |
+        dvc remote modify myremote --local gdrive_service_account_json_file_path src/credentials.json
+        dvc pull
     - name: Retraining
       working-directory: ./src
-      run: python main.py
+      run: |
+        python main.py
       env:
         GDRIVE_CREDENTIALS_DATA: ${{ secrets.GDRIVE_CREDENTIALS_DATA }}
         NEPTUNE_API_TOKEN: ${{ secrets.NEPTUNE_API_TOKEN }}
         NEPTUNE_PROJECT_NAME: ${{ secrets.NEPTUNE_PROJECT_NAME }}
     - name: Push new model to DVC
       working-directory: ./src
-      run: dvc remote modify myremote --local gdrive_service_account_json_file_path src/credentials.json 
+      run: |
         dvc push model_v1.pkl
 

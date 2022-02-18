@@ -11,14 +11,17 @@ jobs:
       NEPTUNE_PROJECT_NAME: ${{ secrets.NEPTUNE_PROJECT_NAME }}
     steps:
       - uses: actions/checkout@v2
-      - name: Using Python 3.6
+      - name: Using Python 3.8
         uses: actions/setup-python@v2
         with:
-          python-version: "3.6"
+          python-version: "3.8"
       - name: Install dependencies
         run: |
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+    - name: Setup DVC
+      run: |
+        dvc remote modify myremote --local gdrive_service_account_json_file_path src/credentials.json
+        dvc pull
       - name: checking-train-script
         working-directory: ./src
-        run: |
-          python train.py
+        run: python train.py
