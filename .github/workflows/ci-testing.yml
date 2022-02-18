@@ -18,9 +18,9 @@ jobs:
       - name: Install dependencies
         run: |
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      - name: Setup DVC
+        run: dvc remote modify myremote --local gdrive_service_account_json_file_path src/credentials.json; dvc pull
+        shell: cmd
       - name: checking-train-script
         working-directory: ./src
-        run: |
-          dvc remote modify myremote --local gdrive_service_account_json_file_path credentials.json 
-          dvc pull
-          python train.py
+        run: python train.py
