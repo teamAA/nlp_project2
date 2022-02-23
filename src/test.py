@@ -118,6 +118,7 @@ def testing():
         raise ValueError("Accuracy is too high")
     else:
         pass
+    print('Testing Accuracy : Good')
     
     # testing expected output
     logregpred2 = model.predict_proba(bow_expected_test[col])
@@ -126,11 +127,11 @@ def testing():
         pred_logreg2.append(int(utils.argmax_2(logregpred2[i])))
     
     for i in range(len(pred_logreg2)):
-        if expected_output[i] != pred_logreg[i]:
-            raise ValueError(f"{testing_text[i]} should be label {expected_output[i]} not {pred_logreg[i]}")
+        if expected_output[i] != pred_logreg2[i]:
+            raise ValueError(f"{testing_text[i]} should be label {expected_output[i]} not {pred_logreg2[i]}")
         else :
             pass
-    
+    print('Testing Expected Output : Good')
     pickle.dump(model, open("model_v1.pkl", 'wb'))
     print("Passed the test!")
     # firli was here
