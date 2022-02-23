@@ -132,7 +132,7 @@ def main(log = False):
     if log == True:
         log_neptune(test, pred_logreg)
 
-    # firli was here
+    # firli was heree
 
     return model
     

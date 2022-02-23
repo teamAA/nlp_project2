@@ -83,7 +83,7 @@ def get_bow_columns(df_bow):
 def testing():
     #get model
     model = train.main(log = False)
-    
+
     #expected output
     testing_text = ['he is good','she is beautiful','they are very good','he is stupid','you are bad']
     expected_output = [1,1,1,-1,-1]
@@ -104,9 +104,6 @@ def testing():
     #get column name
     col = get_bow_columns(bow_train)
     
-    #get model
-    
-
     logregpred = model.predict_proba(bow_test[col])
     pred_logreg = []
     for i in range(0,len(logregpred)):
@@ -136,6 +133,7 @@ def testing():
     
     pickle.dump(model, open("model_v1.pkl", 'wb'))
     print("Passed the test!")
+    # firli was here
 
 
 if __name__ == "__main__":
