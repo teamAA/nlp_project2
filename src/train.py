@@ -51,7 +51,7 @@ def data_preproc(df):
 
     return train_cleaned, test_cleaned
 
-def bag_of_words(train, test, testing_text):
+def bag_of_words(train, test):
     # The default token pattern removes tokens of a single character. That's why we don't have the "I" and "s" tokens in the output
     sentences_train = [' '.join(x) for x in train['cleansed_text']]
     sentences_test = [' '.join(x) for x in test['cleansed_text']]
@@ -132,7 +132,7 @@ def main(log = False):
     if log == True:
         log_neptune(test, pred_logreg)
 
-    # firli was here
+    # firli was heree
 
     return model
     

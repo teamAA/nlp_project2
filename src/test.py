@@ -2,7 +2,7 @@ import sys
 import os
 import dvc.api
 import pickle
-import train
+import train as tr
 from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
 
@@ -82,8 +82,8 @@ def get_bow_columns(df_bow):
 
 def testing():
     #get model
-    model = train.main(log = False)
-    
+    model = tr.main(log = False)
+
     #expected output
     testing_text = ['he is good','she is beautiful','they are very good','he is stupid','you are bad']
     expected_output = [1,1,1,-1,-1]
@@ -104,9 +104,6 @@ def testing():
     #get column name
     col = get_bow_columns(bow_train)
     
-    #get model
-    
-
     logregpred = model.predict_proba(bow_test[col])
     pred_logreg = []
     for i in range(0,len(logregpred)):
@@ -121,6 +118,7 @@ def testing():
         raise ValueError("Accuracy is too high")
     else:
         pass
+    print('Testing Accuracy : Good')
     
     # testing expected output
     logregpred2 = model.predict_proba(bow_expected_test[col])
@@ -129,13 +127,14 @@ def testing():
         pred_logreg2.append(int(utils.argmax_2(logregpred2[i])))
     
     for i in range(len(pred_logreg2)):
-        if expected_output[i] != pred_logreg[i]:
-            raise ValueError(f"{testing_text[i]} should be label {expected_output[i]} not {pred_logreg[i]}")
+        if expected_output[i] != pred_logreg2[i]:
+            raise ValueError(f"{testing_text[i]} should be label {expected_output[i]} not {pred_logreg2[i]}")
         else :
             pass
-    
+    print('Testing Expected Output : Good')
     pickle.dump(model, open("model_v1.pkl", 'wb'))
     print("Passed the test!")
+    # firli was here
 
 
 if __name__ == "__main__":
