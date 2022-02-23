@@ -2,7 +2,7 @@ import sys
 import os
 import dvc.api
 import pickle
-import train
+import train as tr
 from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
 
@@ -82,7 +82,7 @@ def get_bow_columns(df_bow):
 
 def testing():
     #get model
-    model = train.main(log = False)
+    model = tr.main(log = False)
 
     #expected output
     testing_text = ['he is good','she is beautiful','they are very good','he is stupid','you are bad']
