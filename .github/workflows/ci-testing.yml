@@ -1,6 +1,6 @@
 name: testing-train-script
 on:
-  push:
+  pull_request:
     branches: [ main ]
 jobs:
   build:
