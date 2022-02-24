@@ -4,7 +4,7 @@ on:
     branches: [ main ]
 jobs:
   build:
-
+    name: citesting
     runs-on: ubuntu-latest
     
     steps:
