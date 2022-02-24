@@ -82,6 +82,7 @@ def get_bow_columns(df_bow):
 
 def testing():
     #get model
+    raise ValueError("Andre was here")
     model = tr.main(log = False)
 
     #expected output
