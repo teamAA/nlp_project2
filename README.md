@@ -1,11 +1,5 @@
-# nlpproject2021
-nlp project AA 2021
-
-tes kevin
-
-test 123
-
-
+# NLP Project
+NLP project AA 2021
 
 List of Task - 16 Feb 2022
 1. Create a documentation in readme, basically project overview, tools used, instalation, the schema, how it works, exampleetc2
