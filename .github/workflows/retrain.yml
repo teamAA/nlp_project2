@@ -9,10 +9,14 @@ on:
         - main
       paths:
         - src/data-registry/train.csv.dvc
-
+  pull_request:
+      branches:
+        - main
+      paths:
+        - src/data-registry/train.csv.dvc
 jobs:
   build:
-
+    name: retrain
     runs-on: ubuntu-latest
     
     steps:

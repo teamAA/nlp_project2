@@ -8,3 +8,4 @@ client-secrets.json
 src/data-registry/train.csv
 src/data-registry/test.csv
 src/model_v1.pkl
+.vs

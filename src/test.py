@@ -1,20 +1,20 @@
 import sys
+import os
+import dvc.api
+import pickle
+import train as tr
+from pydrive.auth import GoogleAuth
+from pydrive.drive import GoogleDrive
+
+import sys
 import re
 import utils
-import dvc.api
 import numpy as np
 import pandas as pd
-from io import StringIO
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score, f1_score
-from scikitplot.metrics import plot_roc, plot_confusion_matrix, plot_precision_recall
-import neptune
-from neptunecontrib.monitoring.lightgbm import neptune_monitor
-import matplotlib.pyplot as plt
-import os
+from sklearn.metrics import accuracy_score
 
-# firli was here
 
 def load_data():
     train = pd.read_csv('data-registry/train.csv')
@@ -29,7 +29,7 @@ def load_data():
 
     return df
 
-def data_preproc(df):
+def data_preproc_custom(df):
     df['sentiment'] = np.where(df['sentiment']=='neutral',0,df['sentiment'])
     df['sentiment'] = np.where(df['sentiment']=='positive',1,df['sentiment'])
     df['sentiment'] = np.where(df['sentiment']=='negative',-1,df['sentiment'])
@@ -48,30 +48,30 @@ def data_preproc(df):
 
     train_cleaned = df[df['dataset']=='train']
     test_cleaned = df[df['dataset']=='test'].reset_index().drop('index',axis=1)
+    expected_test_cleaned = df[df['dataset']=='testing_text'].reset_index().drop('index',axis=1)
 
-    return train_cleaned, test_cleaned
+    return train_cleaned, test_cleaned, expected_test_cleaned
 
-def bag_of_words(train, test):
+def bag_of_words_custom(train, test, expected_test):
     # The default token pattern removes tokens of a single character. That's why we don't have the "I" and "s" tokens in the output
     sentences_train = [' '.join(x) for x in train['cleansed_text']]
     sentences_test = [' '.join(x) for x in test['cleansed_text']]
+    senteces_expected_test = [' '.join(x) for x in expected_test['cleansed_text']]
 
     count_vectorizer = CountVectorizer()
     count_vectorizer.fit(sentences_train)
+
     bag_of_words_train = count_vectorizer.transform(sentences_train)
     bag_of_words_test = count_vectorizer.transform(sentences_test)
+    bag_of_words_expected_test = count_vectorizer.transform(senteces_expected_test)
 
     # Show the Bag-of-Words Model as a pandas DataFrame
     feature_names = count_vectorizer.get_feature_names()
     df_bow_train = pd.DataFrame(bag_of_words_train.toarray(), columns = feature_names)
     df_bow_test = pd.DataFrame(bag_of_words_test.toarray(), columns = feature_names)
+    df_bow_expected_test = pd.DataFrame(bag_of_words_expected_test.toarray(), columns = feature_names)
 
-    return df_bow_train, df_bow_test
-
-def model_training(bow_train, train):
-    logreg = LogisticRegression(max_iter=1000, random_state=2021)
-    logreg.fit(bow_train, train['sentiment'].tolist())
-    return logreg
+    return df_bow_train, df_bow_test, df_bow_expected_test
 
 def get_bow_columns(df_bow):
     col = []
@@ -80,63 +80,65 @@ def get_bow_columns(df_bow):
             col.append(i)
     return col
 
-def log_neptune(test, pred):
-    #Connect your script to Neptune
-    neptune.init(project_qualified_name=os.getenv('NEPTUNE_PROJECT_NAME'), api_token=os.getenv('NEPTUNE_API_TOKEN'))
-    
-    #Create an experiment and log hyperparameters
-    neptune.create_experiment('NLP_test')
+def testing():
+    #get model
+    # raise ValueError("Andre was here")
+    model = tr.main(log = False)
 
-    f1 = f1_score(test['sentiment'].tolist(), pred, average='macro')
-    accuracy = accuracy_score(test['sentiment'].tolist(), pred)
-    
-    # Log metrics to Neptune
-    neptune.log_metric('accuracy', accuracy)
-    neptune.log_metric('f1_score', f1)
+    #expected output
+    testing_text = ['he is good','she is beautiful','they are very good','he is stupid','you are bad']
+    expected_output = [1,1,1,-1,-1]
 
-    #     fig_roc, ax = plt.subplots(figsize=(12, 10))
-    #     plot_roc(test['sentiment'].tolist(), pred_logreg, ax=ax)
+    # create new data to be tested
+    testing_text = {'text' : testing_text,'sentiment':expected_output}
+    testing_text = pd.DataFrame(testing_text)
+    testing_text['dataset'] = 'testing_text'
 
-    #     fig_cm, ax = plt.subplots(figsize=(12, 10))
-    #     plot_confusion_matrix(test['sentiment'].tolist(), pred_logreg, ax=ax)
-
-    #     fig_pr, ax = plt.subplots(figsize=(12, 10))
-    #     plot_precision_recall(test['sentiment'].tolist(), pred_logreg, ax=ax)
-
-    #     # Log performance charts to Neptune
-    #     neptune.log_image('performance charts', fig_roc)
-    #     neptune.log_image('performance charts', fig_cm)
-    #     neptune.log_image('performance charts', fig_pr)
-
-    #     # Handle CI pipeline details
-    #     if os.getenv('CI') == "true":
-    #         neptune.append_tag('ci-pipeline', os.getenv('NEPTUNE_EXPERIMENT_TAG_ID'))
-
-def main(log = False):
     df = load_data()
-    train, test = data_preproc(df)
-    bow_train, bow_test = bag_of_words(train, test)
+    # merging with testing_text
+    df = pd.concat([df,testing_text],axis=0)
+    df = df.reset_index().drop('index',axis=1)
+    
+    train, test, expected_test = data_preproc_custom(df)
+    bow_train, bow_test, bow_expected_test = bag_of_words_custom(train, test,expected_test)
 
+    #get column name
     col = get_bow_columns(bow_train)
     
-    model = model_training(bow_train[col], train)
-
     logregpred = model.predict_proba(bow_test[col])
     pred_logreg = []
     for i in range(0,len(logregpred)):
         pred_logreg.append(utils.argmax_2(logregpred[i]))
 
+    # Testing for accuracy performance
     acc_score = round(accuracy_score(test['sentiment'].tolist(),pred_logreg), 5)
     print("accuracy: ", acc_score)
+    if acc_score <= 0.4:
+        raise ValueError("Accuracy is too low")
+    elif acc_score >= 0.95:
+        raise ValueError("Accuracy is too high")
+    else:
+        pass
+    print('Testing Accuracy : Good')
     
-    if log == True:
-        log_neptune(test, pred_logreg)
-
-    # firli was heree
-
-    return model
+    # testing expected output
+    logregpred2 = model.predict_proba(bow_expected_test[col])
+    pred_logreg2 = []
+    for i in range(0,len(logregpred2)):
+        pred_logreg2.append(int(utils.argmax_2(logregpred2[i])))
     
+    for i in range(len(pred_logreg2)):
+        if expected_output[i] != pred_logreg2[i]:
+            raise ValueError(f"{testing_text[i]} should be label {expected_output[i]} not {pred_logreg2[i]}")
+        else :
+            pass
+    print('Testing Expected Output : Good')
+    pickle.dump(model, open("model_v1.pkl", 'wb'))
+    print("Passed the test!")
+    # firli was here
+
+
 if __name__ == "__main__":
-    main(log = False)
+    testing()
+    
 
-    sys.exit(0)

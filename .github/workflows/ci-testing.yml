@@ -4,24 +4,35 @@ on:
     branches: [ main ]
 jobs:
   build:
-    runs-on: [ubuntu-latest]
-    env:
-      GDRIVE_CREDENTIALS_DATA: ${{ secrets.GDRIVE_CREDENTIALS_DATA }}
-      NEPTUNE_API_TOKEN: ${{ secrets.NEPTUNE_API_TOKEN }}
-      NEPTUNE_PROJECT_NAME: ${{ secrets.NEPTUNE_PROJECT_NAME }}
+    name: citesting
+    runs-on: ubuntu-latest
+    
     steps:
-      - uses: actions/checkout@v2
-      - name: Using Python 3.8
-        uses: actions/setup-python@v2
-        with:
-          python-version: "3.8"
-      - name: Install dependencies
-        run: |
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+    - uses: actions/checkout@v2
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v2
+      with:
+        python-version: "3.8"
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+    - name: Download NLTK resources
+      run: |
+        python -m nltk.downloader all
     - name: Setup DVC
       run: |
         dvc remote modify myremote --local gdrive_service_account_json_file_path src/credentials.json
         dvc pull
-      - name: checking-train-script
-        working-directory: ./src
-        run: python train.py
+    - name: Testing
+      working-directory: ./src
+      run: |
+        python test.py
+      env:
+        GDRIVE_CREDENTIALS_DATA: ${{ secrets.GDRIVE_CREDENTIALS_DATA }}
+        NEPTUNE_API_TOKEN: ${{ secrets.NEPTUNE_API_TOKEN }}
+        NEPTUNE_PROJECT_NAME: ${{ secrets.NEPTUNE_PROJECT_NAME }}
+    - name: Push new model to DVC
+      working-directory: ./src
+      run: |
+        dvc push model_v1.pkl
