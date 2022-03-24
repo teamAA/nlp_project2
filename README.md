@@ -1,4 +1,4 @@
-# nlpproject2021
+# NLP Project
 NLP project AA 2021
 
 List of Task - 16 Feb 2022
